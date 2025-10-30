@@ -2,9 +2,9 @@ name: Playwright Tests
 
 # 🔁 Quand lancer les tests
 on:
-  push:          # à chaque push sur la branche principale
+  push:          
     branches: [ master ]
-  pull_request:  # ou lors d'une pull request vers main
+  pull_request:  
     branches: [ master ]
 
 jobs:
