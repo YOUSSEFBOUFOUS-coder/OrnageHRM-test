@@ -6,7 +6,7 @@ from datetime import datetime
 @pytest.fixture(scope="function")
 def page(request):  # <-- 'request' permet de connaître le nom du test
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
 
         # 📁 Création des dossiers si inexistants
         os.makedirs("videos", exist_ok=True)
