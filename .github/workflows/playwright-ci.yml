@@ -1,48 +1,44 @@
-name: Playwright Tests Optimized
+name: Playwright Tests with Traces
 
+# 🔁 Quand lancer les tests
 on:
-  push:
+  push:          
     branches: [ master ]
-  pull_request:
+  pull_request:  
     branches: [ master ]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # GitHub Actions runner
 
     steps:
-      # 1️⃣ Checkout du code
-      - name: Checkout code
+      # 1️⃣ Récupérer le code depuis GitHub
+      - name: 🧰 Checkout code
         uses: actions/checkout@v4
 
       # 2️⃣ Installer Python
-      - name: Setup Python
+      - name: 🐍 Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      # 3️⃣ Installer dépendances (pytest + Playwright)
-      - name: Install dependencies
+      # 3️⃣ Installer les dépendances
+      - name: 📦 Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          # Installer uniquement Chromium (le plus rapide pour les tests)
-          playwright install chromium
+          playwright install --with-deps   # installe les navigateurs
 
-      # 3.5️⃣ Créer dossiers pour vidéos et traces
-      - name: Create folders
-        run: mkdir -p videos traces
+      # 4️⃣ Exécuter les tests avec Pytest
+      - name: ▶️ Run Playwright tests
+        run: |
+          pytest --maxfail=1 --disable-warnings -q
 
-      # 4️⃣ Lancer les tests
-      - name: Run Playwright tests
-        run: pytest --maxfail=1 --disable-warnings -q
-
-      # 5️⃣ Upload des vidéos et traces
-      - name: Upload videos and traces
-        if: always()
+      # 5️⃣ Sauvegarder uniquement les traces
+      - name: 📁 Upload traces
+        if: always()   # même si les tests échouent
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-results
-          path: |
-            videos/
-            traces/
+          name: playwright-traces
+          path: traces/
+
