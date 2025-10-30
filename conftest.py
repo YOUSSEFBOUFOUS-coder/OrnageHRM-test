@@ -1,24 +1,27 @@
 import pytest
 from playwright.sync_api import sync_playwright
+import os
 
-BASE_URL = "https://opensource-demo.orangehrmlive.com/"
+# Récupère le navigateur depuis la variable d'environnement
+BROWSER = os.getenv("BROWSER", "chromium")  # chromium par défaut
 
 @pytest.fixture(scope="function")
 def page(request):
-    # Dossier pour chaque trace par test
-    trace_path = f"traces/{request.node.name}.zip"
+    test_name = request.node.name  # nom du test en cours
+    trace_dir = f"traces/{BROWSER}/{test_name}"  # dossier pour la trace
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)  # Headless pour CI/CD
-        context = browser.new_context()
-
+        browser_type = getattr(p, BROWSER)
+        browser = browser_type.launch(headless=True)  # mode headless pour CI
+        context = browser.new_context(record_video_dir=None, record_trace_dir=trace_dir)
         page = context.new_page()
-
-        # Commencer la trace
+        
+        # Active l'enregistrement de trace
         context.tracing.start(screenshots=True, snapshots=True, sources=True)
 
         yield page
 
-        # Stop trace et sauvegarde
-        context.tracing.stop(path=trace_path)
+        # Arrête et enregistre la trace
+        context.tracing.stop(path=f"{trace_dir}.zip")
+        context.close()
         browser.close()

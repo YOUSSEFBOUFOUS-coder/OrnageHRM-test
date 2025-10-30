@@ -1,44 +1,48 @@
-name: Playwright Tests with Traces
+name: Playwright Tests
 
-# 🔁 Quand lancer les tests
 on:
-  push:          
+  push:
     branches: [ master ]
-  pull_request:  
+  pull_request:
     branches: [ master ]
 
 jobs:
   test:
-    runs-on: ubuntu-latest   # GitHub Actions runner
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]  # Test sur ces 3 navigateurs
 
     steps:
-      # 1️⃣ Récupérer le code depuis GitHub
+      # Étape 1 : Récupère le code depuis GitHub
       - name: 🧰 Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Installer Python
+      # Étape 2 : Installer Python
       - name: 🐍 Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      # 3️⃣ Installer les dépendances
+      # Étape 3 : Installer les dépendances
       - name: 📦 Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          playwright install --with-deps   # installe les navigateurs
+          playwright install --with-deps
 
-      # 4️⃣ Exécuter les tests avec Pytest
+      # Étape 4 : Exécuter les tests
       - name: ▶️ Run Playwright tests
+        env:
+          BROWSER: ${{ matrix.browser }}  # Passe le navigateur à pytest
         run: |
           pytest --maxfail=1 --disable-warnings -q
 
-      # 5️⃣ Sauvegarder uniquement les traces
+      # Étape 5 : Sauvegarder les traces
       - name: 📁 Upload traces
-        if: always()   # même si les tests échouent
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-traces
+          name: playwright-traces-${{ matrix.browser }}
           path: traces/
-
