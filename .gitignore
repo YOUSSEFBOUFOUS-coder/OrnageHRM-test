@@ -1,0 +1,43 @@
+# --- PYTHON ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+*.egg
+*.egg-info/
+*.eggs/
+build/
+develop-eggs/
+dist/
+downloads/
+.installed.cfg
+pip-wheel-metadata/
+wheels/
+MANIFEST
+venv/
+.venv/
+env/
+ENV/
+venv.bak/
+*.env
+.DS_Store
+
+# --- PLAYWRIGHT / TEST ---
+.vscode/
+.idea/
+pytest_cache/
+videos/
+traces/
+reports/
+screenshots/
+*.mp4
+*.zip
+
+# --- NODE / NPM (si tu ajoutes du JS ou CI avec npm) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
